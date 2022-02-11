@@ -23,7 +23,7 @@ from statistics import mean, stdev
 
 def print_stats(text, values):
     avg = mean(values)
-    std = stddev(values)
+    std = stdev(values)
     print(f'\n{text}:\t{avg} +- {std}')
 
 if __name__ == "__main__":
