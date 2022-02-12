@@ -60,9 +60,9 @@ if __name__ == "__main__":
         # print(scores[1])
         # print(scores[2])
         # import pdb; pdb.set_trace()
-        negatives.append(scores[0])
-        neutrals.append(scores[1])
-        positives.append(scores[2])
+        negatives.append(scores[0].item())
+        neutrals.append(scores[1].item())
+        positives.append(scores[2].item())
     
     # Return stats
     print_stats('Negative', negatives)
