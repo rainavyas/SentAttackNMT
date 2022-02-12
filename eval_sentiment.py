@@ -53,6 +53,7 @@ if __name__ == "__main__":
         print(f'Evaluating {i}/{len(sentences)}')
         scores = model.predict(sent)
         print(scores)
+        import pdb; pdb.set_trace()
         negatives.append(scores[0])
         neutrals.append(scores[1])
         positives.append(scores[2])
