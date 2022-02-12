@@ -49,7 +49,7 @@ if __name__ == "__main__":
     negatives = []
     neutrals = []
     positives = []
-    for i, sent in enumerate(sentences[:5]):
+    for i, sent in enumerate(sentences):
         print(f'Evaluating {i}/{len(sentences)}')
         scores = model.predict(sent)
         # import pdb; pdb.set_trace()
