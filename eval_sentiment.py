@@ -22,6 +22,8 @@ from models import SentClassifier
 from statistics import mean, stdev
 
 def print_stats(text, values):
+    print(values)
+    import pdb; pdb.set_trace()
     avg = mean(values)
     std = stdev(values)
     print(f'\n{text}:\t{avg} +- {std}')
