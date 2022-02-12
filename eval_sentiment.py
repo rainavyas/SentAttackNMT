@@ -52,6 +52,7 @@ if __name__ == "__main__":
     for i, sent in enumerate(sentences):
         print(f'Evaluating {i}/{len(sentences)}')
         scores = model.predict(sent)
+        print(scores)
         negatives.append(scores[0])
         neutrals.append(scores[1])
         positives.append(scores[2])
