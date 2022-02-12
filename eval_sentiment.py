@@ -22,9 +22,6 @@ from models import SentClassifier
 from statistics import mean, stdev
 
 def print_stats(text, values):
-    print(values)
-    print(type(values[2]))
-    import pdb; pdb.set_trace()
     avg = mean(values)
     std = stdev(values)
     print(f'\n{text}:\t{avg} +- {std}')
@@ -55,10 +52,6 @@ if __name__ == "__main__":
     for i, sent in enumerate(sentences[:5]):
         print(f'Evaluating {i}/{len(sentences)}')
         scores = model.predict(sent)
-        # print(scores)
-        # print(scores[0])
-        # print(scores[1])
-        # print(scores[2])
         # import pdb; pdb.set_trace()
         negatives.append(scores[0].item())
         neutrals.append(scores[1].item())
