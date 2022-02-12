@@ -23,6 +23,7 @@ from statistics import mean, stdev
 
 def print_stats(text, values):
     print(values)
+    print(type(values[2]))
     import pdb; pdb.set_trace()
     avg = mean(values)
     std = stdev(values)
