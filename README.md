@@ -9,7 +9,7 @@ The aim is to perform a sequence-to-sequence adversarial attack, where an attack
 
 The following types of adversarial attacks are considered:
 
-- a simple concatenation attack (where a sequence of N words is appended to the end of the input sequence).
+- an importance based synonym substitution attack (where N words are substituted).
 
 # Requirements
 
