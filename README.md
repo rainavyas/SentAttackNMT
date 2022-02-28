@@ -17,3 +17,5 @@ python3.6 or above
 
 ## Install with PyPI
 `pip install torch transformers nltk pygermanet`
+
+Other setup required to use germanet: https://pypi.org/project/pygermanet/#setup
