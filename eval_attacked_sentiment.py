@@ -34,7 +34,7 @@ if __name__ == '__main__':
     neutrals = []
     positives = []
     missed = 0
-    positive_count = 0
+    counts = [0, 0, 0]
     for ind in range(args.start_ind, args.end_ind):
         filename = f'{args.DIR}/{ind}.txt'
         try:
@@ -49,17 +49,21 @@ if __name__ == '__main__':
         neutrals.append(scores[1])
         positives.append(scores[2])
         
-        if (scores[2] > scores[1]) and (scores[2] > scores[1]):
-            positive_count += 1
+        ind_max = max(enumerate(scores), key=lambda x: x[1])[0]
+        counts[ind_max] += 1
     
     # Return stats
     print_stats('Negative', negatives)
     print_stats('Neutral', neutrals)
     print_stats('Positive', positives)
+    print()
 
-    tot = (args.end_ind-args.start_ind)
-    pos_frac = positive_count/tot
-    print(f'Fraction Positive: {pos_frac}')
+    tot = (args.end_ind-args.start_ind) - missed
+    fracs = [c/tot for c in counts]
+    print(f'Fraction Negative: {fracs[0]}')
+    print(f'Fraction Neutral: {fracs[1]}')
+    print(f'Fraction Positive: {fracs[2]}')
+    print()
 
     print(f"Missed {missed}/{tot} samples")
 
