@@ -43,6 +43,7 @@ if __name__ == '__main__':
         except:
             print(f'Failed to load {ind}.txt')
             missed +=1
+            continue
 
         scores = info[key]
         negatives.append(scores[0])
