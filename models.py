@@ -3,10 +3,11 @@ from transformers import AutoTokenizer
 import torch.nn as nn
 import numpy as np
 from scipy.special import softmax
+from transformers import FSMTForConditionalGeneration, FSMTTokenizer
 
 class SentClassifier(nn.Module):
 
-    """ T5 enc-dec model """
+    """ Roberta enc model """
 
     def __init__(self):
 
@@ -38,3 +39,34 @@ class SentClassifier(nn.Module):
         scores = softmax(scores)
         return scores
 
+
+class NMTSent():
+
+    """Neural Translation followed by Sentiment Classification"""
+
+    def __init__(self):
+
+        mname = 'facebook/wmt19-ru-en'
+        self.tokenizer = FSMTTokenizer.from_pretrained(mname)
+        self.nmt_model = FSMTForConditionalGeneration.from_pretrained(mname)
+        self.sentiment_model = SentClassifier()
+    
+    def predict(self, text):
+        '''
+        Translate and sentiment classify
+        '''
+        self.nmt_model.eval()
+        self.sentiment_model.eval()
+
+        input_ids = self.tokenizer.encode(text, return_tensors="pt")
+        outputs = self.nmt_model.generate(
+            input_ids = input_ids,
+            num_beams = 15,
+            do_sample = False,
+            max_length = 256,
+            length_penalty = 1.0,
+            early_stopping = True,
+            use_cache = True,
+            num_return_sequences = 1)
+        translation = self.tokenizer.decode(outputs.squeeze(), skip_special_tokens=True, clean_up_tokenization_spaces=True)
+        return self.sentiment_model.predict(translation)
