@@ -28,6 +28,7 @@ if __name__ == '__main__':
     negatives = []
     neutrals = []
     positives = []
+    missed = 0
     for ind in range(args.start_ind, args.end_ind):
         filename = f'{args.DIR}/{ind}.txt'
         try:
@@ -35,6 +36,7 @@ if __name__ == '__main__':
                 info = json.load(f)
         except:
             print(f'Failed to load {ind}.txt')
+            missed +=1
 
         scores = info["attacked_probs"]
         negatives.append(scores[0])
@@ -45,3 +47,4 @@ if __name__ == '__main__':
     print_stats('Negative', negatives)
     print_stats('Neutral', neutrals)
     print_stats('Positive', positives)
+    print(f"Missed {missed}/{args.end_ind-args.start_ind} samples")
