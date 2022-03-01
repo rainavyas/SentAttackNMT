@@ -54,7 +54,7 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, N=1):
     attacked_sentence = sentence[:]
     words_swapped = 0
 
-    for i, ind in enumerate(inds):
+    for ind in inds:
         attacked_tokens = nltk.word_tokenize(attacked_sentence)
         target_token = attacked_tokens[ind]
 
@@ -73,7 +73,7 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, N=1):
 
         best = (attacked_sentence, model.predict(attacked_sentence)[2]) # (sentence, positivity score)
         change = False
-        for j, syn in enumerate(synonyms):
+        for syn in synonyms:
             trial_sentence = TreebankWordDetokenizer().detokenize(attacked_tokens[:ind]+[syn]+attacked_tokens[ind+1:])
             score = model.predict(trial_sentence)[2]
             if score > best[1]:
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
         # Attack and save the  sentence attack
         attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, N=args.N)
-        info = {"sentence":sentence, "attacked_sentence":attacked_sentence, "original_probs":original_probs, "attacked_probs":attacked_probs,}
+        info = {"sentence":sentence, "attacked_sentence":attacked_sentence, "original_probs":original_probs, "attacked_probs":attacked_probs}
         filename = f'{dir_name}/{args.start_ind + i}.txt'
         with open(filename, 'w') as f:
             f.write(json.dumps(info))
