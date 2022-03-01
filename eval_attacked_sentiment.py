@@ -34,6 +34,7 @@ if __name__ == '__main__':
     neutrals = []
     positives = []
     missed = 0
+    positive_count = 0
     for ind in range(args.start_ind, args.end_ind):
         filename = f'{args.DIR}/{ind}.txt'
         try:
@@ -47,9 +48,19 @@ if __name__ == '__main__':
         negatives.append(scores[0])
         neutrals.append(scores[1])
         positives.append(scores[2])
+        
+        if (scores[2] > scores[1]) and (scores[2] > scores[1]):
+            positive_count += 1
     
     # Return stats
     print_stats('Negative', negatives)
     print_stats('Neutral', neutrals)
     print_stats('Positive', positives)
-    print(f"Missed {missed}/{args.end_ind-args.start_ind} samples")
+
+    tot = (args.end_ind-args.start_ind)
+    pos_frac = positive_count/tot
+    print(f'Fraction Positive: {pos_frac}')
+
+    print(f"Missed {missed}/{tot} samples")
+
+
