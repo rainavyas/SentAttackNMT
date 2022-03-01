@@ -16,6 +16,7 @@ if __name__ == '__main__':
     commandLineParser.add_argument('DIR', type=str, help='Directory to store results of attack, e.g. Attacked_Data/Imp-Ru_N2')
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data")
     commandLineParser.add_argument('--end_ind', type=int, default=2000, help=" end index in data")
+    commandLineParser.add_argument('--original', type=str, default='no', help=" end index in data")
     args = commandLineParser.parse_args()
 
     # Save the command run
@@ -23,6 +24,10 @@ if __name__ == '__main__':
         os.mkdir('CMDs')
     with open('CMDs/eval_attacked_sentiment.cmd', 'a') as f:
         f.write(' '.join(sys.argv)+'\n')
+    
+    key = 'attacked_probs'
+    if args.original == 'yes':
+        key = 'original_probs'
     
     # Evaluate
     negatives = []
@@ -38,7 +43,7 @@ if __name__ == '__main__':
             print(f'Failed to load {ind}.txt')
             missed +=1
 
-        scores = info["attacked_probs"]
+        scores = info[key]
         negatives.append(scores[0])
         neutrals.append(scores[1])
         positives.append(scores[2])
