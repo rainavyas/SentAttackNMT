@@ -16,4 +16,4 @@ The following types of adversarial attacks are considered:
 python3.6 or above
 
 ## Install with PyPI
-`pip install torch transformers nltk wiki-ru-wordnet`
+`pip install torch transformers nltk wiki-ru-wordnet scipy`
