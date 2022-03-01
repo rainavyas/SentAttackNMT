@@ -102,14 +102,7 @@ if __name__ == '__main__':
     commandLineParser.add_argument('--N', type=int, default=1, help="Number of words to substitute")
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data file")
     commandLineParser.add_argument('--end_ind', type=int, default=100, help=" end index in data file")
-
     args = commandLineParser.parse_args()
-    model_path = args.MODEL
-    base_dir = args.DIR
-    max_syn = args.max_syn
-    N = args.N
-    start_ind = args.start_ind
-    end_ind = args.end_ind
 
     # Save the command run
     if not os.path.isdir('CMDs'):
@@ -128,7 +121,7 @@ if __name__ == '__main__':
     model = NMTSent()
 
     # Create directory to save files in
-    dir_name = f'{args.OUT}'+str(N)
+    dir_name = f'{args.OUT}'+str(args.N)
     if not os.path.isdir(dir_name):
         os.mkdir(dir_name)
 
@@ -136,7 +129,7 @@ if __name__ == '__main__':
     for i, sentence in enumerate(sentences):
 
         # Attack and save the  sentence attack
-        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=max_syn, N=N)
+        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, N=args.N)
         info = {"sentence":sentence, "attacked_sentence":attacked_sentence, "original_probs":original_probs, "attacked_probs":attacked_probs,}
         filename = f'{dir_name}/{args.start_ind + i}.txt'
         with open(filename, 'w') as f:
