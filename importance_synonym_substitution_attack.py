@@ -89,7 +89,7 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, N=1):
     original_probs = model.predict(sentence)
     attacked_probs = model.predict(attacked_sentence)
 
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     return attacked_sentence, original_probs.tolist(), attacked_probs.tolist()
 
 
