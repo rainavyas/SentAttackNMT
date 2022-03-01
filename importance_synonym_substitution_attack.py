@@ -89,7 +89,7 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, N=1):
     original_probs = model.predict(sentence)
     attacked_probs = model.predict(attacked_sentence)
 
-    # import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()
     return attacked_sentence, original_probs.tolist(), attacked_probs.tolist()
 
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     model = NMTSent()
 
     # Create directory to save files in
-    dir_name = f'{args.OUT}'+str(args.N)
+    dir_name = f'{args.OUT}_N{args.N}'
     if not os.path.isdir(dir_name):
         os.mkdir(dir_name)
 
