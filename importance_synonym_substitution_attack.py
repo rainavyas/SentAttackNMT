@@ -116,6 +116,7 @@ if __name__ == '__main__':
     # Load the data
     with open(args.IN, 'r') as f:
         sentences = f.readlines()
+    sentences = [s.rstrip('\n') for s in sentences]
     sentences = sentences[args.start_ind:args.end_ind]
 
     # Create end-to-end stacked model
@@ -133,5 +134,5 @@ if __name__ == '__main__':
         attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, N=args.N)
         info = {"sentence":sentence, "attacked_sentence":attacked_sentence, "original_probs":original_probs, "attacked_probs":attacked_probs}
         filename = f'{dir_name}/{args.start_ind + i}.txt'
-        with open(filename, 'w') as f:
+        with open(filename, 'w', encoding='utf-8') as f:
             f.write(json.dumps(info))

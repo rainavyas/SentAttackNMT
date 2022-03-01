@@ -44,6 +44,7 @@ if __name__ == "__main__":
     # Load the data
     with open(args.IN, 'r') as f:
         sentences = f.readlines()
+    sentences = [s.rstrip('\n') for s in sentences]
     
     # Evaluate
     negatives = []
