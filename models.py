@@ -9,6 +9,7 @@ class NMTSeq2Seq(nn.Module):
 
     """ Neural Machine Translation """
     def __init__(self, mname = 'facebook/wmt19-ru-en'):
+        super(NMTSeq2Seq, self).__init__()
 
         self.tokenizer = FSMTTokenizer.from_pretrained(mname)
         self.model = FSMTForConditionalGeneration.from_pretrained(mname)
