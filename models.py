@@ -5,6 +5,34 @@ import numpy as np
 from scipy.special import softmax
 from transformers import FSMTForConditionalGeneration, FSMTTokenizer
 
+class NMTSeq2Seq(nn.Module):
+
+    """ Neural Machine Translation """
+    def __init__(self, mname = 'facebook/wmt19-ru-en'):
+
+        self.tokenizer = FSMTTokenizer.from_pretrained(mname)
+        self.model = FSMTForConditionalGeneration.from_pretrained(mname)
+
+    def predict(self, text):
+        '''
+        Translate
+        '''
+        self.model.eval()
+
+        input_ids = self.tokenizer.encode(text, return_tensors="pt")
+        outputs = self.nmt_model.generate(
+            input_ids = input_ids,
+            num_beams = 15,
+            do_sample = False,
+            max_length = 256,
+            length_penalty = 1.0,
+            early_stopping = True,
+            use_cache = True,
+            num_return_sequences = 1)
+        translation = self.tokenizer.decode(outputs.squeeze(), skip_special_tokens=True, clean_up_tokenization_spaces=True)
+        return translation
+
+
 class SentClassifier(nn.Module):
 
     """ Roberta enc model """
@@ -46,9 +74,7 @@ class NMTSent():
 
     def __init__(self):
 
-        mname = 'facebook/wmt19-ru-en'
-        self.tokenizer = FSMTTokenizer.from_pretrained(mname)
-        self.nmt_model = FSMTForConditionalGeneration.from_pretrained(mname)
+        self.nmt_model = NMTSeq2Seq()
         self.sentiment_model = SentClassifier()
     
     def predict(self, text):
@@ -58,15 +84,5 @@ class NMTSent():
         self.nmt_model.eval()
         self.sentiment_model.eval()
 
-        input_ids = self.tokenizer.encode(text, return_tensors="pt")
-        outputs = self.nmt_model.generate(
-            input_ids = input_ids,
-            num_beams = 15,
-            do_sample = False,
-            max_length = 256,
-            length_penalty = 1.0,
-            early_stopping = True,
-            use_cache = True,
-            num_return_sequences = 1)
-        translation = self.tokenizer.decode(outputs.squeeze(), skip_special_tokens=True, clean_up_tokenization_spaces=True)
+        translation = self.nmt_model.predict(text)
         return self.sentiment_model.predict(translation)
