@@ -44,7 +44,7 @@ if __name__ == '__main__':
         attacked_source = info['attacked_sentence']
 
         original_prediction = model.predict(original_source)
-        attacked_prediction = model.predict(original_source)
+        attacked_prediction = model.predict(attacked_source)
 
         print(f'{ind}\n')
         print(f'Original Source: {original_source}')
