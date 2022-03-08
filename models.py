@@ -21,7 +21,7 @@ class NMTSeq2Seq(nn.Module):
         self.model.eval()
 
         input_ids = self.tokenizer.encode(text, return_tensors="pt")
-        outputs = self.nmt_model.generate(
+        outputs = self.model.generate(
             input_ids = input_ids,
             num_beams = 15,
             do_sample = False,
