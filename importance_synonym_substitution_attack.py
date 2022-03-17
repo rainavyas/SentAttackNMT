@@ -13,6 +13,7 @@ import argparse
 from collections import OrderedDict
 from models import NMTSent
 import string
+import math
 
 def get_token_importances(tokens, model):
     '''
@@ -37,9 +38,9 @@ def get_token_importances(tokens, model):
     return importances
 
 
-def attack_sentence(sentence, model, wikiwordnet, max_syn=5, N=1):
+def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1):
     '''
-    Identifies the N most important words
+    Identifies the N most important words (N=frac*length)
     Finds synonyms for these words using Russian WordNet
     Selects the best synonym to replace with based on Forward Pass to maximise
     the positivity score.
@@ -50,6 +51,9 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, N=1):
     tokens = nltk.word_tokenize(sentence)
     token_importances = get_token_importances(tokens, model)
     inds = torch.argsort(torch.FloatTensor(token_importances), descending=True)
+
+    # Number of tokens to substitute
+    N = math.floor(frac*len(tokens))
 
     attacked_sentence = sentence[:]
     words_swapped = 0
@@ -100,7 +104,7 @@ if __name__ == '__main__':
     commandLineParser.add_argument('IN', type=str, help='Source Data file')
     commandLineParser.add_argument('OUT', type=str, help='Directory to store results of attack, e.g. Attacked_Data/Imp-Ru')
     commandLineParser.add_argument('--max_syn', type=int, default=6, help="Number of synonyms to search")
-    commandLineParser.add_argument('--N', type=int, default=1, help="Number of words to substitute")
+    commandLineParser.add_argument('--frac', type=float, default=0.1, help="Fraction of words to substitute")
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data file")
     commandLineParser.add_argument('--end_ind', type=int, default=100, help=" end index in data file")
     args = commandLineParser.parse_args()
@@ -123,7 +127,7 @@ if __name__ == '__main__':
     model = NMTSent()
 
     # Create directory to save files in
-    dir_name = f'{args.OUT}_N{args.N}'
+    dir_name = f'{args.OUT}_frac{args.frac}'
     if not os.path.isdir(dir_name):
         os.mkdir(dir_name)
 
@@ -131,7 +135,7 @@ if __name__ == '__main__':
     for i, sentence in enumerate(sentences):
 
         # Attack and save the  sentence attack
-        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, N=args.N)
+        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, frac=args.frac)
         info = {"sentence":sentence, "attacked_sentence":attacked_sentence, "original_probs":original_probs, "attacked_probs":attacked_probs}
         filename = f'{dir_name}/{args.start_ind + i}.txt'
         with open(filename, 'w', encoding='utf-8') as f:
