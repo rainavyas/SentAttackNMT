@@ -50,6 +50,7 @@ if __name__ == "__main__":
     negatives = []
     neutrals = []
     positives = []
+    counts = [0, 0, 0]
     for i, sent in enumerate(sentences):
         print(f'Evaluating {i}/{len(sentences)}')
         scores = model.predict(sent)
@@ -58,7 +59,18 @@ if __name__ == "__main__":
         neutrals.append(scores[1].item())
         positives.append(scores[2].item())
     
+        ind_max = max(enumerate(scores), key=lambda x: x[1])[0]
+        counts[ind_max] += 1
+    
     # Return stats
     print_stats('Negative', negatives)
     print_stats('Neutral', neutrals)
     print_stats('Positive', positives)
+    print()
+
+    tot = len(sentences)
+    fracs = [c/tot for c in counts]
+    print(f'Fraction Negative: {fracs[0]}')
+    print(f'Fraction Neutral: {fracs[1]}')
+    print(f'Fraction Positive: {fracs[2]}')
+    print()
