@@ -19,7 +19,7 @@ python3.6 or above
 `pip install torch transformers scipy`
 
 ### Russian Processing
-nltk wiki-ru-wordnet 
+`pip install nltk wiki-ru-wordnet` 
 
 ### German Processing
 
