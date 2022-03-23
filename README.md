@@ -16,4 +16,13 @@ The following types of adversarial attacks are considered:
 python3.6 or above
 
 ## Install with PyPI
-`pip install torch transformers nltk wiki-ru-wordnet scipy`
+`pip install torch transformers scipy`
+
+### Russian Processing
+`pip install nltk wiki-ru-wordnet` 
+
+### German Processing
+
+Use [odenet](https://github.com/hdaSprachtechnologie/odenet). To install, clone the repository and then run `pip install .` from within the repo. Further install: `pip install networkx matplotlib`.
+
+
