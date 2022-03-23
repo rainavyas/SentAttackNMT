@@ -14,6 +14,7 @@ from collections import OrderedDict
 from models import NMTSent
 import string
 import math
+from odenet import synonyms_word
 
 def get_token_importances(tokens, model):
     '''
@@ -38,10 +39,10 @@ def get_token_importances(tokens, model):
     return importances
 
 
-def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1):
+def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1, lang='ru'):
     '''
     Identifies the N most important words (N=frac*length)
-    Finds synonyms for these words using Russian WordNet
+    Finds synonyms for these words using Russian WordNet or German OdeNet (choose language)
     Selects the best synonym to replace with based on Forward Pass to maximise
     the positivity score.
 
@@ -63,9 +64,16 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1):
         target_token = attacked_tokens[ind]
 
         synonyms = []
-        for syn in wikiwordnet.get_synsets(target_token):
-            for lemma in syn.get_words():
-                synonyms.append(lemma.lemma())
+        if lang == 'ru':
+            for syn in wikiwordnet.get_synsets(target_token):
+                for lemma in syn.get_words():
+                    synonyms.append(lemma.lemma())
+        elif lang == 'de':
+            all = synonyms_word(target_token)
+            synonyms = [item for sublist in all for item in sublist]
+        else:
+            raise ValueError('Language not recognised')
+            
         if len(synonyms)==0:
             continue
 
@@ -107,6 +115,7 @@ if __name__ == '__main__':
     commandLineParser.add_argument('--frac', type=float, default=0.1, help="Fraction of words to substitute")
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data file")
     commandLineParser.add_argument('--end_ind', type=int, default=100, help=" end index in data file")
+    commandLineParser.add_argument('--lang', type=str, default='ru', help="Source language: ru or de")
     args = commandLineParser.parse_args()
 
     # Save the command run
@@ -124,7 +133,7 @@ if __name__ == '__main__':
     sentences = sentences[args.start_ind:args.end_ind]
 
     # Create end-to-end stacked model
-    model = NMTSent()
+    model = NMTSent(mname = f'facebook/wmt19-{args.lang}-en')
 
     # Create directory to save files in
     dir_name = f'{args.OUT}_frac{args.frac}'
@@ -135,7 +144,7 @@ if __name__ == '__main__':
     for i, sentence in enumerate(sentences):
 
         # Attack and save the  sentence attack
-        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, frac=args.frac)
+        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, frac=args.frac, lang=args.lang)
         info = {"sentence":sentence, "attacked_sentence":attacked_sentence, "original_probs":original_probs, "attacked_probs":attacked_probs}
         filename = f'{dir_name}/{args.start_ind + i}.txt'
         with open(filename, 'w', encoding='utf-8') as f:

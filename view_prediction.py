@@ -16,6 +16,7 @@ if __name__ == '__main__':
     commandLineParser.add_argument('DIR', type=str, help='Directory with stored results of attack, e.g. Attacked_Data/Imp-Ru_N2')
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data")
     commandLineParser.add_argument('--end_ind', type=int, default=2000, help=" end index in data")
+    commandLineParser.add_argument('--lang', type=str, default='ru', help="Source language: ru or de")
     args = commandLineParser.parse_args()
 
     # Save the command run
@@ -25,7 +26,7 @@ if __name__ == '__main__':
         f.write(' '.join(sys.argv)+'\n')
     
     # Load model
-    model = NMTSeq2Seq()
+    model = NMTSeq2Seq(mname = f'facebook/wmt19-{args.lang}-en')
     
     # Evaluate
     for ind in range(args.start_ind, args.end_ind):

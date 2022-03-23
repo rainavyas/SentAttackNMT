@@ -73,9 +73,9 @@ class NMTSent():
 
     """Neural Translation followed by Sentiment Classification"""
 
-    def __init__(self):
+    def __init__(self, mname = 'facebook/wmt19-ru-en'):
 
-        self.nmt_model = NMTSeq2Seq()
+        self.nmt_model = NMTSeq2Seq(mname=mname)
         self.sentiment_model = SentClassifier()
     
     def predict(self, text):
