@@ -70,10 +70,13 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1, lang='ru'
                     synonyms.append(lemma.lemma())
         elif lang == 'de':
             all = synonyms_word(target_token)
-            synonyms = [item for sublist in all for item in sublist]
+            try:
+                synonyms = [item for sublist in all for item in sublist]
+            except:
+                continue
         else:
             raise ValueError('Language not recognised')
-            
+
         if len(synonyms)==0:
             continue
 
