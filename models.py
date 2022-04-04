@@ -1,5 +1,6 @@
 from transformers import AutoModelForSequenceClassification
 from transformers import AutoTokenizer
+import torch
 import torch.nn as nn
 import numpy as np
 from scipy.special import softmax
@@ -87,3 +88,22 @@ class NMTSent():
 
         translation = self.nmt_model.predict(text)
         return self.sentiment_model.predict(translation)
+    
+
+class LangSentClassifier():
+
+    """Sentiment Classifier for different languages"""
+
+    def __init__(self, mname='blanchefort/rubert-base-cased-sentiment-rusentiment'):
+
+        self.tokenizer = AutoTokenizer.from_pretrained(mname)
+        self.model = AutoModelForSequenceClassification.from_pretrained(mname)
+    
+    @torch.no_grad()
+    def predict(self, text):
+        inputs = self.tokenizer(text, max_length=512, padding=True, truncation=True, return_tensors='pt')
+        outputs = self.model(**inputs)
+        scores = outputs[0][0].detach().numpy()
+        scores = softmax(scores)
+        return scores
+
