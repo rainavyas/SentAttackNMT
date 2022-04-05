@@ -18,6 +18,7 @@ if __name__ == '__main__':
     commandLineParser.add_argument('--lang', type=str, default='ru', help='source language')
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data")
     commandLineParser.add_argument('--end_ind', type=int, default=2000, help=" end index in data")
+    commandLineParser.add_argument('--original', type=str, default='no', help=" is it unattacked data?")
     args = commandLineParser.parse_args()
 
     # Save the command run
@@ -51,8 +52,11 @@ if __name__ == '__main__':
             missed +=1
             continue
 
-        attacked_source_text = info['attacked_sentence']
-        scores = model.predict(attacked_source_text)
+        
+        source_text = info['attacked_sentence']
+        if args.original == 'yes':
+            source_text = info['sentence']
+        scores = model.predict(source_text)
         negatives.append(scores[neg])
         neutrals.append(scores[neu])
         positives.append(scores[pos])
