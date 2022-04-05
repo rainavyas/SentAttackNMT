@@ -58,15 +58,15 @@ if __name__ == '__main__':
             source_text = info['sentence']
         scores = model.predict(source_text)
         # import pdb; pdb.set_trace()
-        negatives.append(scores[neg])
-        neutrals.append(scores[neu])
-        positives.append(scores[pos])
+        negatives.append(float(scores[neg]))
+        neutrals.append(float(scores[neu]))
+        positives.append(float(scores[pos]))
         
         ind_max = max(enumerate(scores), key=lambda x: x[1])[0]
         counts[ind_max] += 1
     
     # Return stats
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     print_stats('Negative', negatives)
     print_stats('Neutral', neutrals)
     print_stats('Positive', positives)
