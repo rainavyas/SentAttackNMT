@@ -30,8 +30,8 @@ if __name__ == '__main__':
     # Load the model
     if args.lang == 'ru':
         mname = 'blanchefort/rubert-base-cased-sentiment-rusentiment'
-        neg=0
-        neu=2
+        neg=2
+        neu=0
         pos=1
     model = LangSentClassifier(mname=mname)
 
@@ -57,6 +57,7 @@ if __name__ == '__main__':
         if args.original == 'yes':
             source_text = info['sentence']
         scores = model.predict(source_text)
+        import pdb; pdb.set_trace()
         negatives.append(scores[neg])
         neutrals.append(scores[neu])
         positives.append(scores[pos])
