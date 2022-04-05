@@ -5,6 +5,7 @@ import torch.nn as nn
 import numpy as np
 from scipy.special import softmax
 from transformers import FSMTForConditionalGeneration, FSMTTokenizer
+from transformers import BertTokenizerFast
 
 class NMTSeq2Seq(nn.Module):
 
@@ -96,7 +97,8 @@ class LangSentClassifier():
 
     def __init__(self, mname='blanchefort/rubert-base-cased-sentiment-rusentiment'):
 
-        self.tokenizer = AutoTokenizer.from_pretrained(mname)
+        # self.tokenizer = AutoTokenizer.from_pretrained(mname)
+        self.tokenizer = BertTokenizerFast.from_pretrained('blanchefort/rubert-base-cased-sentiment-rusentiment')
         self.model = AutoModelForSequenceClassification.from_pretrained(mname)
     
     @torch.no_grad()
