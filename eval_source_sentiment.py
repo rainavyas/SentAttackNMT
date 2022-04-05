@@ -66,6 +66,7 @@ if __name__ == '__main__':
         counts[ind_max] += 1
     
     # Return stats
+    import pdb; pdb.set_trace()
     print_stats('Negative', negatives)
     print_stats('Neutral', neutrals)
     print_stats('Positive', positives)
