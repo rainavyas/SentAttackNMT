@@ -5,6 +5,7 @@ import torch.nn as nn
 import numpy as np
 from scipy.special import softmax
 from transformers import FSMTForConditionalGeneration, FSMTTokenizer
+import re
 
 class NMTSeq2Seq(nn.Module):
 
@@ -89,6 +90,8 @@ class NMTSent():
         translation = self.nmt_model.predict(text)
         return self.sentiment_model.predict(translation)
     
+    
+    
 
 class LangSentClassifier():
 
@@ -96,11 +99,35 @@ class LangSentClassifier():
 
     def __init__(self, mname='blanchefort/rubert-base-cased-sentiment-rusentiment'):
 
+        if mname=='blanchefort/rubert-base-cased-sentiment-rusentiment':
+            self.lang = 'ru'
+        else:
+            self.lang = 'de'
         self.tokenizer = AutoTokenizer.from_pretrained(mname)
         self.model = AutoModelForSequenceClassification.from_pretrained(mname)
     
+    def replace_numbers(self,text: str) -> str:
+            return text.replace("0"," null").replace("1"," eins").replace("2"," zwei").replace("3"," drei").replace("4"," vier").replace("5"," fünf").replace("6"," sechs").replace("7"," sieben").replace("8"," acht").replace("9"," neun")         
+
+    def clean_text(self,text: str)-> str:   
+
+        self.clean_chars = re.compile(r'[^A-Za-züöäÖÜÄß ]', re.MULTILINE)
+        self.clean_http_urls = re.compile(r'https*\\S+', re.MULTILINE)
+        self.clean_at_mentions = re.compile(r'@\\S+', re.MULTILINE) 
+
+        text = text.replace("\n", " ")        
+        text = self.clean_http_urls.sub('',text)
+        text = self.clean_at_mentions.sub('',text)        
+        text = self.replace_numbers(text)                
+        text = self.clean_chars.sub('', text) # use only text chars                          
+        text = ' '.join(text.split()) # substitute multiple whitespace with single whitespace   
+        text = text.strip().lower()
+        return text
+
     @torch.no_grad()
     def predict(self, text):
+        if self.lang == 'de':
+            text = self.clean_text(text)
         inputs = self.tokenizer(text, max_length=512, padding=True, truncation=True, return_tensors='pt')
         outputs = self.model(**inputs)
         scores = outputs[0][0].detach().numpy()

@@ -33,6 +33,11 @@ if __name__ == '__main__':
         neg=2
         neu=0
         pos=1
+    elif args.lang == 'de':
+        mname = 'oliverguhr/german-sentiment-bert'
+        neg=1
+        pos=0
+        neu=2
     model = LangSentClassifier(mname=mname)
 
     # Evaluate
