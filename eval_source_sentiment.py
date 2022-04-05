@@ -57,7 +57,7 @@ if __name__ == '__main__':
         if args.original == 'yes':
             source_text = info['sentence']
         scores = model.predict(source_text)
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         negatives.append(scores[neg])
         neutrals.append(scores[neu])
         positives.append(scores[pos])
