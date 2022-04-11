@@ -4,6 +4,7 @@ Importantce ranked synonym substitution attack
 
 import torch
 import nltk
+from nltk.corpus import wordnet as wn
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 from wiki_ru_wordnet import WikiWordnet
 import json
@@ -11,7 +12,7 @@ import sys
 import os
 import argparse
 from collections import OrderedDict
-from models import NMTSent
+from models import NMTSent, SentClassifier
 import string
 import math
 from odenet import synonyms_word
@@ -46,6 +47,9 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1, lang='ru'
     Selects the best synonym to replace with based on Forward Pass to maximise
     the positivity score.
 
+    If language passed is 'en', then attack is directly on the sentiment classifier
+    and not the NMT system.
+
     Returns the original_sentence, updated_sentence, original_probs, updated_probs
     '''
 
@@ -74,6 +78,10 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1, lang='ru'
                 synonyms = [item for sublist in all for item in sublist]
             except:
                 continue
+        elif lang == 'en':
+            for syn in wn.synsets(target_token):
+                for lemma in syn.lemmas():
+                    synonyms.append(lemma.name())
         else:
             raise ValueError('Language not recognised')
 
@@ -118,7 +126,7 @@ if __name__ == '__main__':
     commandLineParser.add_argument('--frac', type=float, default=0.1, help="Fraction of words to substitute")
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data file")
     commandLineParser.add_argument('--end_ind', type=int, default=100, help=" end index in data file")
-    commandLineParser.add_argument('--lang', type=str, default='ru', help="Source language: ru or de")
+    commandLineParser.add_argument('--lang', type=str, default='ru', help="Source language: ru or de; or ref lang to attack sent classifier: en")
     args = commandLineParser.parse_args()
 
     # Save the command run
@@ -128,6 +136,7 @@ if __name__ == '__main__':
         f.write(' '.join(sys.argv)+'\n')
     
     wikiwordnet = WikiWordnet()
+    nltk.download('wordnet')
 
     # Load the data
     with open(args.IN, 'r') as f:
@@ -136,7 +145,10 @@ if __name__ == '__main__':
     sentences = sentences[args.start_ind:args.end_ind]
 
     # Create end-to-end stacked model
-    model = NMTSent(mname = f'facebook/wmt19-{args.lang}-en')
+    if args.lang != 'en':
+        model = NMTSent(mname = f'facebook/wmt19-{args.lang}-en')
+    else:
+        model = SentClassifier()
 
     # Create directory to save files in
     dir_name = f'{args.OUT}_frac{args.frac}'
