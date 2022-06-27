@@ -1,4 +1,6 @@
 '''
+# NEEDS CHANGING TO BE COMPATIBLE WITH NEW LANGSENTCLASSIIER definition
+
 Evaluate sentiment of SOURCE language using output files from attack script:
 importance_synonym_substitution_attack.py
 '''

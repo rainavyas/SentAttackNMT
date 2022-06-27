@@ -97,12 +97,15 @@ class LangSentClassifier():
 
     """Sentiment Classifier for different languages"""
 
-    def __init__(self, mname='blanchefort/rubert-base-cased-sentiment-rusentiment'):
+    def __init__(self, lang='ru', mname='blanchefort/rubert-base-cased-sentiment-rusentiment'):
 
-        if mname=='blanchefort/rubert-base-cased-sentiment-rusentiment':
-            self.lang = 'ru'
-        else:
-            self.lang = 'de'
+        self.lang = lang
+        if lang == 'ru':
+            mname = 'blanchefort/rubert-base-cased-sentiment-rusentiment'
+        elif lang == 'de':
+            mname = 'oliverguhr/german-sentiment-bert'
+        elif lang == 'en':
+            mname = "cardiffnlp/twitter-roberta-base-sentiment"
         self.tokenizer = AutoTokenizer.from_pretrained(mname)
         self.model = AutoModelForSequenceClassification.from_pretrained(mname)
     
@@ -123,14 +126,36 @@ class LangSentClassifier():
         text = ' '.join(text.split()) # substitute multiple whitespace with single whitespace   
         text = text.strip().lower()
         return text
+    
+    def preprocess(self, text):
+        new_text = []
+    
+    
+        for t in text.split(" "):
+            t = '@user' if t.startswith('@') and len(t) > 1 else t
+            t = 'http' if t.startswith('http') else t
+            new_text.append(t)
+        return " ".join(new_text)
 
     @torch.no_grad()
     def predict(self, text):
+        '''
+            Returns probabilties as [neg, neu, pos]
+        '''
         if self.lang == 'de':
             text = self.clean_text(text)
+        if self.lang == 'en':
+            text = self.preprocess(text)
         inputs = self.tokenizer(text, max_length=512, padding=True, truncation=True, return_tensors='pt')
         outputs = self.model(**inputs)
         scores = outputs[0][0].detach().numpy()
         scores = softmax(scores)
+        scores = [float(s) for s in scores]
+        if self.lang == 'en':
+            return scores
+        if self.lang == 'de':
+            return [scores[1], scores[2], scores[0]]
+        if self.lang == 'ru':
+            return [scores[2], scores[0], scores[1]]
         return scores
 

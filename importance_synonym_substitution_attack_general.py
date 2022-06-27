@@ -1,9 +1,6 @@
 '''
-Importantce ranked synonym substitution attack
-
-This file can only handle english as the target language
-
-For more general language pairs, use importance_synonym_substitution_attack.py
+Same as importance_synonym_substitition_attack.py but
+allows for different source-target language pairs (not just en as target language)
 '''
 
 import torch
@@ -16,7 +13,7 @@ import sys
 import os
 import argparse
 from collections import OrderedDict
-from models import NMTSent, SentClassifier
+from models import LangSentClassifier, NMTSent
 import string
 import math
 from odenet import synonyms_word
@@ -131,13 +128,15 @@ if __name__ == '__main__':
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data file")
     commandLineParser.add_argument('--end_ind', type=int, default=100, help="end index in data file")
     commandLineParser.add_argument('--sent_ind', type=int, default=2, help="sentiment index to attack e.g. 2 is positive")
-    commandLineParser.add_argument('--lang', type=str, default='ru', help="Source language: ru or de; or ref lang to attack sent classifier: en")
+    commandLineParser.add_argument('--source_lang', type=str, default='ru', help="Source language: ru or de")
+    commandLineParser.add_argument('--target_lang', type=str, default='en', help="Target language: ru or de")
+    commandLineParser.add_argument('--sent_attack', type=str, default='no', help="Attack sentiment classifier using target?")
     args = commandLineParser.parse_args()
 
     # Save the command run
     if not os.path.isdir('CMDs'):
         os.mkdir('CMDs')
-    with open('CMDs/importance_synonym_substitution_attack.cmd', 'a') as f:
+    with open('CMDs/importance_synonym_substitution_attack_general.cmd', 'a') as f:
         f.write(' '.join(sys.argv)+'\n')
     
     wikiwordnet = WikiWordnet()
@@ -150,10 +149,10 @@ if __name__ == '__main__':
     sentences = sentences[args.start_ind:args.end_ind]
 
     # Create end-to-end stacked model
-    if args.lang != 'en':
-        model = NMTSent(mname = f'facebook/wmt19-{args.lang}-en')
+    if args.sent_attack == 'no':
+        model = NMTSent(mname = f'facebook/wmt19-{args.source_lang}-{args.target_lang}')
     else:
-        model = SentClassifier()
+        model = LangSentClassifier(lang=args.target_lang)
 
     # Create directory to save files in
     dir_name = f'{args.OUT}_frac{args.frac}'
@@ -163,8 +162,8 @@ if __name__ == '__main__':
 
     for i, sentence in enumerate(sentences):
 
-        # Attack and save the  sentence attack
-        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, frac=args.frac, lang=args.lang, sent_ind=args.sent_ind)
+        # Attack and save the sentence attack
+        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, frac=args.frac, lang=args.source_lang, sent_ind=args.sent_ind)
         info = {"sentence":sentence, "attacked_sentence":attacked_sentence, "original_probs":original_probs, "attacked_probs":attacked_probs}
         filename = f'{dir_name}/{args.start_ind + i}.txt'
         with open(filename, 'w', encoding='utf-8') as f:
