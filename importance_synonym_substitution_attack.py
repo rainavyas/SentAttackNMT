@@ -17,7 +17,7 @@ import string
 import math
 from odenet import synonyms_word
 
-def get_token_importances(tokens, model):
+def get_token_importances(tokens, model, sent_ind=2):
     '''
     Returns list of importances in token order
 
@@ -26,7 +26,7 @@ def get_token_importances(tokens, model):
     with and without target token included
     '''
 
-    ref_score = model.predict(sentence)[2] # select probability of positive
+    ref_score = model.predict(sentence)[sent_ind] # select correct sentiment
 
     importances = []
     for i, token in enumerate(tokens):
@@ -40,12 +40,12 @@ def get_token_importances(tokens, model):
     return importances
 
 
-def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1, lang='ru'):
+def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1, lang='ru', sent_ind=2):
     '''
     Identifies the N most important words (N=frac*length)
     Finds synonyms for these words using Russian WordNet or German OdeNet (choose language)
     Selects the best synonym to replace with based on Forward Pass to maximise
-    the positivity score.
+    the selected sentiment score.
 
     If language passed is 'en', then attack is directly on the sentiment classifier
     and not the NMT system.
@@ -54,7 +54,7 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1, lang='ru'
     '''
 
     tokens = nltk.word_tokenize(sentence)
-    token_importances = get_token_importances(tokens, model)
+    token_importances = get_token_importances(tokens, model, sent_ind=sent_ind)
     inds = torch.argsort(torch.FloatTensor(token_importances), descending=True)
 
     # Number of tokens to substitute
@@ -125,7 +125,8 @@ if __name__ == '__main__':
     commandLineParser.add_argument('--max_syn', type=int, default=6, help="Number of synonyms to search")
     commandLineParser.add_argument('--frac', type=float, default=0.1, help="Fraction of words to substitute")
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data file")
-    commandLineParser.add_argument('--end_ind', type=int, default=100, help=" end index in data file")
+    commandLineParser.add_argument('--end_ind', type=int, default=100, help="end index in data file")
+    commandLineParser.add_argument('--sent_ind', type=int, default=2, help="sentiment index to attack e.g. 2 is positive")
     commandLineParser.add_argument('--lang', type=str, default='ru', help="Source language: ru or de; or ref lang to attack sent classifier: en")
     args = commandLineParser.parse_args()
 
@@ -159,7 +160,7 @@ if __name__ == '__main__':
     for i, sentence in enumerate(sentences):
 
         # Attack and save the  sentence attack
-        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, frac=args.frac, lang=args.lang)
+        attacked_sentence, original_probs, attacked_probs = attack_sentence(sentence, model, wikiwordnet, max_syn=args.max_syn, frac=args.frac, lang=args.lang, sent_ind=args.sent_ind)
         info = {"sentence":sentence, "attacked_sentence":attacked_sentence, "original_probs":original_probs, "attacked_probs":attacked_probs}
         filename = f'{dir_name}/{args.start_ind + i}.txt'
         with open(filename, 'w', encoding='utf-8') as f:
