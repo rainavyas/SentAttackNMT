@@ -34,7 +34,7 @@ def get_token_importances(tokens, model, sent_ind=2):
             importances.append(0)
         else:
             new_sentence = TreebankWordDetokenizer().detokenize(tokens[:i]+tokens[i+1:])
-            token_score = model.predict(new_sentence)[2]
+            token_score = model.predict(new_sentence)[sent_ind]
             importances.append(abs(ref_score-token_score))
 
     return importances
@@ -94,11 +94,11 @@ def attack_sentence(sentence, model, wikiwordnet, max_syn=5, frac=0.1, lang='ru'
         if len(synonyms) > max_syn+1:
             synonyms = synonyms[:max_syn+1]
 
-        best = (attacked_sentence, model.predict(attacked_sentence)[2]) # (sentence, positivity score)
+        best = (attacked_sentence, model.predict(attacked_sentence)[sent_ind]) # (sentence, positivity score)
         change = False
         for syn in synonyms:
             trial_sentence = TreebankWordDetokenizer().detokenize(attacked_tokens[:ind]+[syn]+attacked_tokens[ind+1:])
-            score = model.predict(trial_sentence)[2]
+            score = model.predict(trial_sentence)[sent_ind]
             if score > best[1]:
                 change = True
                 best = (trial_sentence, score)
