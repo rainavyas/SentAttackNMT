@@ -1,6 +1,4 @@
 '''
-# NEEDS CHANGING TO BE COMPATIBLE WITH NEW LANGSENTCLASSIIER definition
-
 Evaluate sentiment of SOURCE language using output files from attack script:
 importance_synonym_substitution_attack.py
 '''
@@ -30,17 +28,7 @@ if __name__ == '__main__':
         f.write(' '.join(sys.argv)+'\n')
 
     # Load the model
-    if args.lang == 'ru':
-        mname = 'blanchefort/rubert-base-cased-sentiment-rusentiment'
-        neg=2
-        neu=0
-        pos=1
-    elif args.lang == 'de':
-        mname = 'oliverguhr/german-sentiment-bert'
-        neg=1
-        pos=0
-        neu=2
-    model = LangSentClassifier(mname=mname)
+    model = LangSentClassifier(lang=args.lang)
 
     # Evaluate
     negatives = []
@@ -59,15 +47,14 @@ if __name__ == '__main__':
             missed +=1
             continue
 
-        
         source_text = info['attacked_sentence']
         if args.original == 'yes':
             source_text = info['sentence']
         scores = model.predict(source_text)
         # import pdb; pdb.set_trace()
-        negatives.append(float(scores[neg]))
-        neutrals.append(float(scores[neu]))
-        positives.append(float(scores[pos]))
+        negatives.append(float(scores[0]))
+        neutrals.append(float(scores[1]))
+        positives.append(float(scores[2]))
         
         ind_max = max(enumerate(scores), key=lambda x: x[1])[0]
         counts[ind_max] += 1
@@ -81,9 +68,9 @@ if __name__ == '__main__':
 
     tot = (args.end_ind-args.start_ind) - missed
     fracs = [c/tot for c in counts]
-    print(f'Fraction Negative: {fracs[neg]}')
-    print(f'Fraction Neutral: {fracs[neu]}')
-    print(f'Fraction Positive: {fracs[pos]}')
+    print(f'Fraction Negative: {fracs[0]}')
+    print(f'Fraction Neutral: {fracs[1]}')
+    print(f'Fraction Positive: {fracs[2]}')
     print()
 
     print(f"Missed {missed}/{tot} samples")

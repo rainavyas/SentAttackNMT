@@ -1,6 +1,6 @@
 '''
 Evaluate sentiment using output files from attack script:
-importance_synonym_substitution_attack.py
+importance_synonym_substitution_attack.py or general version of script
 '''
 
 import json
@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     # Get command line arguments
     commandLineParser = argparse.ArgumentParser()
-    commandLineParser.add_argument('DIR', type=str, help='Directory with stored results of attack, e.g. Attacked_Data/Imp-Ru_N2')
+    commandLineParser.add_argument('DIR', type=str, help='Directory with stored results of attack, e.g. Attacked_Data/Imp-Ru_frac0.1')
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data")
     commandLineParser.add_argument('--end_ind', type=int, default=2000, help=" end index in data")
     commandLineParser.add_argument('--original', type=str, default='no', help=" is it unattacked data?")

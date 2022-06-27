@@ -1,4 +1,6 @@
 '''
+Everything this file does can be achieved using 'eval_attacked_sentiment.py'
+
 Input file:
 
 sentence 1
@@ -18,7 +20,7 @@ Output: Average (mean) + standard deviation of sentiment scores:
 import sys
 import os
 import argparse
-from models import SentClassifier
+from models import LangSentClassifier
 from statistics import mean, stdev
 
 def print_stats(text, values):
@@ -30,6 +32,7 @@ if __name__ == "__main__":
     # Get command line arguments
     commandLineParser = argparse.ArgumentParser()
     commandLineParser.add_argument('IN', type=str, help='Path to data')
+    commandLineParser.add_argument('--lang', type=str, default='en', help='language')
     args = commandLineParser.parse_args()
 
     # Save the command run
@@ -39,7 +42,7 @@ if __name__ == "__main__":
         f.write(' '.join(sys.argv)+'\n')
 
     # Load the model
-    model = SentClassifier()
+    model = LangSentClassifier(lang=args.lang)
 
     # Load the data
     with open(args.IN, 'r') as f:

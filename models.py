@@ -97,7 +97,7 @@ class LangSentClassifier():
 
     """Sentiment Classifier for different languages"""
 
-    def __init__(self, lang='ru', mname='blanchefort/rubert-base-cased-sentiment-rusentiment'):
+    def __init__(self, lang='ru'):
 
         self.lang = lang
         if lang == 'ru':
