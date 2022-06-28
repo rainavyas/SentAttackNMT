@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     # Get command line arguments
     commandLineParser = argparse.ArgumentParser()
-    commandLineParser.add_argument('IN', type=str, help='Source Data file')
+    commandLineParser.add_argument('IN', type=str, help='Source Data file - source if NMT attack and target if sent classifier attack')
     commandLineParser.add_argument('OUT', type=str, help='Directory to store results of attack, e.g. Attacked_Data/Imp-Ru')
     commandLineParser.add_argument('--max_syn', type=int, default=6, help="Number of synonyms to search")
     commandLineParser.add_argument('--frac', type=float, default=0.1, help="Fraction of words to substitute")
