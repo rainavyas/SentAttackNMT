@@ -59,8 +59,9 @@ if __name__ == '__main__':
     print_stats('Positive', positives)
     print()
 
-    tot = (args.end_ind-args.start_ind) - missed
-    fracs = [c/tot for c in counts]
+    tot = (args.end_ind-args.start_ind)
+    tot_adj = tot - missed
+    fracs = [c/tot_adj for c in counts]
     print(f'Fraction Negative: {fracs[0]}')
     print(f'Fraction Neutral: {fracs[1]}')
     print(f'Fraction Positive: {fracs[2]}')
