@@ -154,8 +154,12 @@ class LangSentClassifier():
         if self.lang == 'en':
             return scores
         if self.lang == 'de':
-            return [scores[1], scores[2], scores[0]]
+            # eliminate neutral prediction
+            # return [scores[1], scores[2], scores[0]]
+            return [scores[1], 0, scores[0]]
         if self.lang == 'ru':
-            return [scores[2], scores[0], scores[1]]
+            # eliminate neutral prediction
+            # return [scores[2], scores[0], scores[1]]
+            return [scores[2], 0, scores[1]]
         return scores
 
