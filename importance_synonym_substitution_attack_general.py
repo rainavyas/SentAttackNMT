@@ -128,8 +128,8 @@ if __name__ == '__main__':
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data file")
     commandLineParser.add_argument('--end_ind', type=int, default=100, help="end index in data file")
     commandLineParser.add_argument('--sent_ind', type=int, default=2, help="sentiment index to attack e.g. 2 is positive")
-    commandLineParser.add_argument('--source_lang', type=str, default='ru', help="Source language: ru or de")
-    commandLineParser.add_argument('--target_lang', type=str, default='en', help="Target language: ru or de")
+    commandLineParser.add_argument('--source_lang', type=str, default='ru', help="Source language")
+    commandLineParser.add_argument('--target_lang', type=str, default='en', help="Target language")
     commandLineParser.add_argument('--sent_attack', type=str, default='no', help="Attack sentiment classifier using target?")
     args = commandLineParser.parse_args()
 
