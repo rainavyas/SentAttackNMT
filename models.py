@@ -138,7 +138,7 @@ class LangSentClassifier():
         return " ".join(new_text)
 
     @torch.no_grad()
-    def predict(self, text):
+    def predict(self, text, no_neutral = False):
         '''
             Returns probabilties as [neg, neu, pos]
         '''
@@ -152,14 +152,15 @@ class LangSentClassifier():
         scores = softmax(scores)
         scores = [float(s) for s in scores]
         if self.lang == 'en':
+            if no_neutral:
+                return [scores[0], 0, scores[2]]
             return scores
         if self.lang == 'de':
-            # eliminate neutral prediction
-            # return [scores[1], scores[2], scores[0]]
-            return [scores[1], 0, scores[0]]
+            if no_neutral:
+                return [scores[1], 0, scores[0]]
+            return [scores[1], scores[2], scores[0]]
         if self.lang == 'ru':
-            # eliminate neutral prediction
-            # return [scores[2], scores[0], scores[1]]
-            return [scores[2], 0, scores[1]]
-        return scores
+            if no_neutral:
+                return [scores[2], 0, scores[1]]
+            return [scores[2], scores[0], scores[1]]
 

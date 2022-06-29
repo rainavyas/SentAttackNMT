@@ -17,6 +17,7 @@ if __name__ == '__main__':
     commandLineParser.add_argument('--start_ind', type=int, default=0, help="start index in data")
     commandLineParser.add_argument('--end_ind', type=int, default=2000, help=" end index in data")
     commandLineParser.add_argument('--original', type=str, default='no', help=" is it unattacked data?")
+    commandLineParser.add_argument('--no_neutral', type=str, default='yes', help=" don't use neutral")
     args = commandLineParser.parse_args()
 
     # Save the command run
@@ -46,6 +47,8 @@ if __name__ == '__main__':
             continue
 
         scores = info[key]
+        if args.no_neutral == 'yes':
+            scores[1] = 0
         negatives.append(scores[0])
         neutrals.append(scores[1])
         positives.append(scores[2])
